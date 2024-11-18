@@ -42,42 +42,26 @@ class RegistrationState(StatesGroup):
     balance = State()
 
 
-#@dp.callback_query_handler(text="Регистрация")
 @dp.message_handler(text="Регистрация")
 async def sign_up(message):
     await message.answer("Введите имя пользователя (только латинский алфавит):")
     await RegistrationState.username.set()
 
 
-#@dp.callback_query_handler(state=RegistrationState.username)
-# @dp.message_handler(state=RegistrationState.username)
-# async def set_username(message, state):
-#     users = get_all_users()
-#     for user in users:
-#         if user[1] in message.text:
-#             await message.answer('Пользователь существует, введите другое имя')
-#             await RegistrationState.username.set()
-#             break
-#     await state.update_data(username=message.text)
-#     await message.answer("Введите свой email")
-#     await RegistrationState.email.set()
-#         # await message.answer('Пользователь существует, введите другое имя')
-#         # await RegistrationState.username.set()
-
 @dp.message_handler(state=RegistrationState.username)
 async def set_username(message, state):
-    await state.update_data(users_name=message.text)
-    data = await state.get_data(['users_name'])
-    if is_included(data['users_name']):
+    #await state.update_data(users_name=message.text)
+    #data = await state.get_data(['users_name'])
+    #if is_included(data['users_name']):
+    if is_included(username=message.text):
         await message.answer("Пользователь существует, введите другое имя")
         await RegistrationState.username.set()
     else:
-        await state.update_data(users_name=message.text)
+        await state.update_data(username=message.text)
         await message.answer("Введите свой email:")
         await RegistrationState.email.set()
 
 
-#@dp.callback_query_handler(state=RegistrationState.email)
 @dp.message_handler(state=RegistrationState.email)
 async def set_email(message, state):
     await state.update_data(email=message.text)
@@ -85,11 +69,12 @@ async def set_email(message, state):
     await RegistrationState.age.set()
 
 
-#@dp.callback_query_handler(state=RegistrationState.age)
 @dp.message_handler(state=RegistrationState.age)
 async def set_email(message, state):
     await state.update_data(age=message.text)
-    add_users(RegistrationState.username, RegistrationState.email, RegistrationState.age, 1000)
+    data = await state.get_data()
+    add_users(data['username'], data['email'], data['age'], 1000)
+    await message.answer('Регистрация прошла успешно')
     await state.finish()
 
 
