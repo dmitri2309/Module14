@@ -50,9 +50,6 @@ async def sign_up(message):
 
 @dp.message_handler(state=RegistrationState.username)
 async def set_username(message, state):
-    #await state.update_data(users_name=message.text)
-    #data = await state.get_data(['users_name'])
-    #if is_included(data['users_name']):
     if is_included(username=message.text):
         await message.answer("Пользователь существует, введите другое имя")
         await RegistrationState.username.set()
